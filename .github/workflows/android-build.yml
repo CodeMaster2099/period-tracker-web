@@ -27,8 +27,23 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Debug environment
+        run: |
+          flutter doctor -v || true
+          flutter --version || true
+          echo "--- ENV ---"
+          printenv || true
+
       - name: Build APK (release)
-        run: flutter build apk --release
+        run: |
+          set -o pipefail
+          flutter build apk --release -v 2>&1 | tee build_log.txt
+
+      - name: Upload build log
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build_log.txt
       - name: Create GitHub Release and upload APK
         uses: softprops/action-gh-release@v1
         with:
