@@ -39,7 +39,13 @@ jobs:
           set -o pipefail
           flutter build apk --release -v 2>&1 | tee build_log.txt
 
+      - name: Ensure build log exists
+        if: ${{ always() }}
+        run: |
+          if [ ! -f build_log.txt ]; then echo "NO_BUILD_LOG_PRODUCED" > build_log.txt; fi
+
       - name: Upload build log
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: build-log
